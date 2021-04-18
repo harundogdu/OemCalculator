@@ -40,6 +40,14 @@ const ProductController = (() => {
             data.products.push(newProduct);
 
             return newProduct;
+        },
+        getTotal: function () {
+            let total = 0;
+            data.products.forEach((product) => {
+                total += product.price;
+            });
+            data.totalPrice = total
+            return data.totalPrice;
         }
     }
 
@@ -54,8 +62,9 @@ const UIController = (() => {
         productPrice: '#productPrice',
         buttonAdd: '.btnAdd',
         productCard: '#productCard',
-        totalCard: '#totalCard'
-
+        totalCard: '#totalCard',
+        totalTRY: '#total-try',
+        totalUSD: '#total-usd'
     }
 
     //public
@@ -69,7 +78,7 @@ const UIController = (() => {
                 <tr>
                     <td>${product.id}</td>
                     <td>${product.name}</td>
-                    <td>${product.price}</td>
+                    <td>$${product.price}</td>
                     <td class="text-right">
                         <button title="Edit Product" class="btn btn-warning btn-sm btnEdit" type="submit">
                             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -92,7 +101,7 @@ const UIController = (() => {
                 <tr>
                     <td>${product.id}</td>
                     <td>${product.name}</td>
-                    <td>${product.price}</td>
+                    <td>$${product.price}</td>
                     <td class="text-right">
                         <button title="Edit Product" class="btn btn-warning btn-sm btnEdit" type="submit">
                             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -103,6 +112,11 @@ const UIController = (() => {
 
             document.querySelector(Selectors.productList).innerHTML += item;
 
+        },
+        showTotal: function (total) {
+            let rate = 3.8;
+            document.querySelector(Selectors.totalUSD).textContent = total;
+            document.querySelector(Selectors.totalTRY).textContent = (parseFloat(total * rate)).toFixed(2);
         },
         clearInputs: () => {
             document.querySelector(Selectors.productName).value = "";
@@ -138,8 +152,15 @@ const AppController = ((ProductCtrl, UICtrl) => {
             // add item to list
             UICtrl.addProduct(newProduct);
 
+            // get Total
+            const total = ProductCtrl.getTotal();
+
+            // show total
+            UICtrl.showTotal(total);
+
             // clear inputs
             UICtrl.clearInputs();
+
         } else {
             alert('Please fill in the relevant fields.');
         }
