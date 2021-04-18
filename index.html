@@ -1,20 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="Description" content="Enter your description here"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
-<title>Oem Calculator</title>
-</head>
-<body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
-<script src="assets/js/app.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Enter your description here" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Oem Calculator</title>
+</head>
+
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-dark bg-danger">
+        <div class="container">
+            <a href="" class="navbar-brand">Oem Calculator</a>
+        </div>
+    </nav>
+    <!-- section -->
+    <section>
+        <div class="container">
+
+            <div class="card my-3">
+                <div class="card-body">
+                    <form action="">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label for="name">Product Name</label>
+                                <input type="text" id="name" class="form-control" placeholder="enter product name..">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name">Product Price</label>
+                                <input type="text" id="price" class="form-control" placeholder="enter product price..">
+                            </div>
+                        </div>
+                        <div class="form-row mt-2">
+                            <div class="col-md-12">
+                                <button id="btnAdd" class="btn btn-primary btn-sm" type="submit">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> Add
+                                </button>
+                                <button id="btnEdit" class="btn btn-warning btn-sm" type="submit">
+                                    <i class="fa fa-edit" aria-hidden="true"></i> Save Changes
+                                </button>
+                                <button id="btnDelete" class="btn btn-danger btn-sm" type="submit">
+                                    <i class="fa fa-times" aria-hidden="true"></i> Delete
+                                </button>
+                                <button id="btnCancel" class="btn btn-secondary btn-sm" type="submit">
+                                    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body">
+                    <table class="table text-center table-striped table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Phone</td>
+                                <td>150₺</td>
+                                <td class="text-right">
+                                    <button id="btnEdit" class="btn btn-warning btn-sm" type="submit">
+                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card">
+                    <div class="card-footer text-right">
+                        <p>Total (TRY) : <strong>₺110</strong></p>
+                        <p>Total (USD) : <strong>$110</strong></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
+
 </html>
