@@ -27,6 +27,12 @@ const ProductController = (() => {
         getData: () => {
             return data
         },
+        setCurrentProduct: function (product) {
+            data.selectedProduct = product;
+        },
+        getCurrentProduct: function () {
+            return data.selectedProduct;
+        },
         addProduct: function (name, price) {
             let id;
 
@@ -48,6 +54,17 @@ const ProductController = (() => {
             });
             data.totalPrice = total
             return data.totalPrice;
+        },
+        getProductById: function (id) {
+            let product = null;
+
+            data.products.forEach(function (prd) {
+                if (prd.id == id) {
+                    product = prd;
+                }
+            });
+
+            return product;
         }
     }
 
@@ -61,6 +78,9 @@ const UIController = (() => {
         productName: '#productName',
         productPrice: '#productPrice',
         buttonAdd: '.btnAdd',
+        buttonUpdate: '.btnUpdate',
+        buttonDelete: '.btnDelete',
+        buttonCancel: '.btnCancel',
         productCard: '#productCard',
         totalCard: '#totalCard',
         totalTRY: '#total-try',
@@ -80,9 +100,7 @@ const UIController = (() => {
                     <td>${product.name}</td>
                     <td>$${product.price}</td>
                     <td class="text-right">
-                        <button title="Edit Product" class="btn btn-warning btn-sm btnEdit" type="submit">
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                        </button>
+                        <i style="cursor:pointer;" title="Edit Product" class="fa fa-edit bg-warning p-2 font-weight-bold product-edit" aria-hidden="true"></i>
                     </td>
                 </tr>
                 `;
@@ -103,9 +121,7 @@ const UIController = (() => {
                     <td>${product.name}</td>
                     <td>$${product.price}</td>
                     <td class="text-right">
-                        <button title="Edit Product" class="btn btn-warning btn-sm btnEdit" type="submit">
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                        </button>
+                            <i style="cursor:pointer;" title="Edit Product" class="fa fa-edit bg-warning p-2 font-weight-bold product-edit" aria-hidden="true" data-id="${product.id}"></i>
                     </td>
                 </tr>
                 `;
@@ -115,7 +131,7 @@ const UIController = (() => {
         },
         showTotal: function (total) {
             let rate = 3.8;
-            document.querySelector(Selectors.totalUSD).textContent = total;
+            document.querySelector(Selectors.totalUSD).textContent = (total).toFixed(2);
             document.querySelector(Selectors.totalTRY).textContent = (parseFloat(total * rate)).toFixed(2);
         },
         clearInputs: () => {
@@ -125,6 +141,33 @@ const UIController = (() => {
         hideCard: () => {
             document.querySelector(Selectors.productCard).style.display = 'none';
             document.querySelector(Selectors.totalCard).style.display = 'none';
+        },
+        addProductToForm: function () {
+            let product = ProductController.getCurrentProduct();
+            document.querySelector(Selectors.productName).value = product.name;
+            document.querySelector(Selectors.productPrice).value = product.price;
+        },
+        addingState: function () {
+            UIController.clearInputs();
+            document.querySelector(Selectors.buttonAdd).style.display = "inline";
+            document.querySelector(Selectors.buttonCancel).style.display = "none";
+            document.querySelector(Selectors.buttonDelete).style.display = "none";
+            document.querySelector(Selectors.buttonUpdate).style.display = "none";
+        },
+        editingState: function (tr) {
+            const parent = tr.parentElement.children;
+
+            for (let index = 0; index < parent.length; index++) {
+                if (parent[index].classList.contains('bg-warning')) {
+                    parent[index].classList.remove('bg-warning');
+                }
+            }
+
+            tr.classList.add('bg-warning');
+            document.querySelector(Selectors.buttonAdd).style.display = "none";
+            document.querySelector(Selectors.buttonCancel).style.display = "inline";
+            document.querySelector(Selectors.buttonDelete).style.display = "inline";
+            document.querySelector(Selectors.buttonUpdate).style.display = "inline";
         }
     }
 
@@ -138,8 +181,36 @@ const AppController = ((ProductCtrl, UICtrl) => {
     //load event listeners
     const loadEventListeners = () => {
         document.querySelector(UISelector.buttonAdd).addEventListener('click', productAddSubmit);
+        document.querySelector(UISelector.productList).addEventListener('click', productEditSubmit);
+        document.querySelector(UISelector.buttonUpdate).addEventListener('click', productEditSubmit);
     }
 
+    // product edit form
+    const productEditSubmit = ((e) => {
+
+        if (e.target.classList.contains('product-edit')) {
+
+            // selected item
+            const id = e.target.getAttribute('data-id');
+
+            // getProduct by selected item
+            const product = ProductCtrl.getProductById(id);
+
+            // set current product
+            ProductCtrl.setCurrentProduct(product);
+
+            // edit interface
+            UICtrl.addProductToForm();
+
+            // editing area
+            UICtrl.editingState(e.target.parentElement.parentElement);
+
+        }
+
+        e.preventDefault();
+    });
+
+    // product add
     const productAddSubmit = ((e) => {
 
         const productName = document.querySelector(UISelector.productName).value;
@@ -171,6 +242,7 @@ const AppController = ((ProductCtrl, UICtrl) => {
     return {
         init: () => {
             console.log('starting app..');
+            UICtrl.addingState();
             const products = ProductCtrl.getProducts();
             if (products.length == 0) {
                 UICtrl.hideCard();
