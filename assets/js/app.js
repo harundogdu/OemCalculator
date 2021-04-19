@@ -61,6 +61,13 @@ const ProductController = (() => {
             return product;
 
         },
+        deleteProduct: function (product) {
+            data.products.forEach((prd, index) => {
+                if (prd.id == product.id) {
+                    data.products.splice(index, 1);
+                }
+            });
+        },
         getTotal: function () {
             let total = 0;
             data.products.forEach((product) => {
@@ -184,6 +191,15 @@ const UIController = (() => {
             document.querySelector(Selectors.productName).value = product.name;
             document.querySelector(Selectors.productPrice).value = product.price;
         },
+        deleteProduct: function () {
+            let items = document.querySelectorAll(Selectors.productListItems);
+
+            items.forEach((item) => {
+                if (item.classList.contains('bg-warning')) {
+                    item.remove();
+                }
+            });
+        },
         addingState: function () {
             UIController.clearWarnings();
             UIController.clearInputs();
@@ -229,6 +245,9 @@ const AppController = ((ProductCtrl, UICtrl) => {
 
         // cancel event
         document.querySelector(UISelector.buttonCancel).addEventListener('click', productCancel);
+
+        // delete event
+        document.querySelector(UISelector.buttonDelete).addEventListener('click', productDelete);
     }
 
     // product add
@@ -336,6 +355,40 @@ const AppController = ((ProductCtrl, UICtrl) => {
 
         e.preventDefault();
     });
+
+    // product delete
+    const productDelete = ((e) => {
+
+        // get selected product
+        let selectedProduct = ProductCtrl.getCurrentProduct();
+
+        // delete product
+        ProductCtrl.deleteProduct(selectedProduct);
+
+        // delete ui
+        UICtrl.deleteProduct();
+
+        // get Total
+        const total = ProductCtrl.getTotal();
+
+        // show total
+        UICtrl.showTotal(total);
+
+        // clear inputs
+        UICtrl.clearInputs();
+
+        // adding state
+        UICtrl.addingState();
+
+        if (total == 0) {
+            UICtrl.hideCard();
+        }
+
+        e.preventDefault();
+    });
+
+
+
 
     return {
         init: () => {
