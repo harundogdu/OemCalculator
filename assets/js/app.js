@@ -151,12 +151,12 @@ const UIController = (() => {
             items.forEach(function (item) {
                 if (item.classList.contains('bg-warning')) {
                     item.children[1].textContent = product.name;
-                    item.children[2].textContent =`$${product.price}`;
+                    item.children[2].textContent = `$${product.price}`;
                     updatedItem = item;
                 }
             });
 
-            return updatedItem;              
+            return updatedItem;
         },
         showTotal: function (total) {
             let rate = 3.8;
@@ -167,6 +167,14 @@ const UIController = (() => {
             document.querySelector(Selectors.productName).value = "";
             document.querySelector(Selectors.productPrice).value = "";
         },
+        clearWarnings: () => {
+            const items = document.querySelectorAll(Selectors.productListItems);
+            items.forEach(item => {
+                if (item.classList.contains('bg-warning')) {
+                    item.classList.remove('bg-warning');
+                }
+            });
+        },
         hideCard: () => {
             document.querySelector(Selectors.productCard).style.display = 'none';
             document.querySelector(Selectors.totalCard).style.display = 'none';
@@ -176,10 +184,8 @@ const UIController = (() => {
             document.querySelector(Selectors.productName).value = product.name;
             document.querySelector(Selectors.productPrice).value = product.price;
         },
-        addingState: function (item) {
-            if(item){
-                item.classList.remove('bg-warning');
-            }
+        addingState: function () {
+            UIController.clearWarnings();
             UIController.clearInputs();
             document.querySelector(Selectors.buttonAdd).style.display = "inline";
             document.querySelector(Selectors.buttonCancel).style.display = "none";
@@ -220,21 +226,23 @@ const AppController = ((ProductCtrl, UICtrl) => {
 
         // edit product submit
         document.querySelector(UISelector.buttonUpdate).addEventListener('click', productUpdate);
+
+        // cancel event
+        document.querySelector(UISelector.buttonCancel).addEventListener('click', productCancel);
     }
 
-    // product update
-    const productUpdate = ((e) => {
+    // product add
+    const productAddSubmit = ((e) => {
 
         const productName = document.querySelector(UISelector.productName).value;
         const productPrice = document.querySelector(UISelector.productPrice).value;
 
         if (productName !== '' && productPrice !== '') {
+            // add product
+            const newProduct = ProductCtrl.addProduct(productName, productPrice);
 
-            // setProduct
-            const updatedProduct = ProductCtrl.setProduct(productName, productPrice);
-
-            // updated product ui
-            let item = UICtrl.uptadeProduct(updatedProduct);
+            // add item to list
+            let item = UICtrl.addProduct(newProduct);
 
             // get Total
             const total = ProductCtrl.getTotal();
@@ -242,12 +250,11 @@ const AppController = ((ProductCtrl, UICtrl) => {
             // show total
             UICtrl.showTotal(total);
 
-            // clear inputs
-            UICtrl.clearInputs();
-
             // adding state
             UICtrl.addingState(item);
 
+            // clear inputs
+            UICtrl.clearInputs();
 
         } else {
             alert('Please fill in the relevant fields.');
@@ -281,18 +288,19 @@ const AppController = ((ProductCtrl, UICtrl) => {
         e.preventDefault();
     });
 
-    // product add
-    const productAddSubmit = ((e) => {
+    // product update
+    const productUpdate = ((e) => {
 
         const productName = document.querySelector(UISelector.productName).value;
         const productPrice = document.querySelector(UISelector.productPrice).value;
 
         if (productName !== '' && productPrice !== '') {
-            // add product
-            const newProduct = ProductCtrl.addProduct(productName, productPrice);
 
-            // add item to list
-            let item = UICtrl.addProduct(newProduct);
+            // setProduct
+            const updatedProduct = ProductCtrl.setProduct(productName, productPrice);
+
+            // updated product ui
+            UICtrl.uptadeProduct(updatedProduct);
 
             // get Total
             const total = ProductCtrl.getTotal();
@@ -300,14 +308,31 @@ const AppController = ((ProductCtrl, UICtrl) => {
             // show total
             UICtrl.showTotal(total);
 
-            UICtrl.addingState(item);
-
             // clear inputs
             UICtrl.clearInputs();
+
+            // adding state
+            UICtrl.addingState();
+
 
         } else {
             alert('Please fill in the relevant fields.');
         }
+
+        e.preventDefault();
+    });
+
+    // product cancel
+    const productCancel = ((e) => {
+
+        // adding state
+        UICtrl.addingState();
+
+        // clear bg warnings
+        UIController.clearWarnings();
+
+        // clear inputs
+        UICtrl.clearInputs();
 
         e.preventDefault();
     });
