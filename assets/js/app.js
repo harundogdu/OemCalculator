@@ -1,5 +1,52 @@
 // Storage Controller
 const StorageController = (() => {
+    // public
+    return {
+        addProduct: function (product) {
+            let products;
+
+            if (localStorage.getItem('products') == null) {
+                products = [];
+                products.push(product);
+            } else {
+                products = JSON.parse(localStorage.getItem('products'));
+                products.push(product);
+            }
+            localStorage.setItem('products', JSON.stringify(products));
+        },
+        getProducts: function () {
+            let products;
+
+            if (localStorage.getItem('products') == null) {
+                products = [];
+            } else {
+                products = JSON.parse(localStorage.getItem('products'));
+            }
+
+            return products;
+        },
+        uptadeProduct: function (product) {
+            let products = JSON.parse(localStorage.getItem('products'));
+
+            products.forEach(function (prd, index) {
+                if (product.id == prd.id) {
+                    products.splice(index, 1, product);
+                }
+            });
+
+            localStorage.setItem('products', JSON.stringify(products));
+        },
+        deleteProduct: function (product) {
+            let products = JSON.parse(localStorage.getItem('products'));
+
+            products.forEach(function (prd, index) {
+                if (product.id == prd.id) {
+                    products.splice(index, 1);
+                }
+            });
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+    }
 
 })();
 
@@ -14,7 +61,7 @@ const ProductController = (() => {
     }
 
     const data = {
-        products: [],
+        products: StorageController.getProducts(),
         selectedProduct: null,
         totalPrice: 0
     }
@@ -122,7 +169,7 @@ const UIController = (() => {
                     <td>${product.name}</td>
                     <td>$${product.price}</td>
                     <td class="text-right">
-                        <i style="cursor:pointer;" title="Edit Product" class="fa fa-edit bg-warning p-2 font-weight-bold product-edit" aria-hidden="true"></i>
+                        <i style="cursor:pointer;" title="Edit Product" class="fa fa-edit bg-warning p-2 font-weight-bold product-edit" aria-hidden="true" data-id="${product.id}"></i>
                     </td>
                 </tr>
                 `;
@@ -228,7 +275,7 @@ const UIController = (() => {
 })();
 
 // App Controller
-const AppController = ((ProductCtrl, UICtrl) => {
+const AppController = ((ProductCtrl, UICtrl, StorageCtrl) => {
 
     const UISelector = UICtrl.getSelectors();
 
@@ -261,16 +308,16 @@ const AppController = ((ProductCtrl, UICtrl) => {
             const newProduct = ProductCtrl.addProduct(productName, productPrice);
 
             // add item to list
-            let item = UICtrl.addProduct(newProduct);
+            UICtrl.addProduct(newProduct);
+
+            // add product to LS
+            StorageCtrl.addProduct(newProduct);
 
             // get Total
             const total = ProductCtrl.getTotal();
 
             // show total
             UICtrl.showTotal(total);
-
-            // adding state
-            UICtrl.addingState(item);
 
             // clear inputs
             UICtrl.clearInputs();
@@ -327,6 +374,9 @@ const AppController = ((ProductCtrl, UICtrl) => {
             // show total
             UICtrl.showTotal(total);
 
+            // set product to LS
+            StorageCtrl.uptadeProduct(updatedProduct);
+
             // clear inputs
             UICtrl.clearInputs();
 
@@ -374,6 +424,9 @@ const AppController = ((ProductCtrl, UICtrl) => {
         // show total
         UICtrl.showTotal(total);
 
+        // set product to LS
+        StorageCtrl.deleteProduct(selectedProduct);
+
         // clear inputs
         UICtrl.clearInputs();
 
@@ -387,9 +440,6 @@ const AppController = ((ProductCtrl, UICtrl) => {
         e.preventDefault();
     });
 
-
-
-
     return {
         init: () => {
             console.log('starting app..');
@@ -400,10 +450,17 @@ const AppController = ((ProductCtrl, UICtrl) => {
             } else {
                 UICtrl.createProductList(products);
             }
+
+            // total
+            const total = ProductCtrl.getTotal();
+
+            // show total ui
+            UIController.showTotal(total);
+
             loadEventListeners();
         }
     }
 
-})(ProductController, UIController);
+})(ProductController, UIController, StorageController);
 
 AppController.init();
